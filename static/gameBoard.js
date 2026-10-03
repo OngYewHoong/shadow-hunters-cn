@@ -5,6 +5,77 @@ var GameBoard = new Phaser.Class ({
     initialize:
 
     function Board () {
+        this.allegName = function(alleg) {
+            if (alleg === "Hunter") return "猎人";
+            if (alleg === "Shadow") return "暗影";
+            if (alleg === "Neutral") return "中立";
+            return alleg;
+        };
+
+        this.areaImageKey = function(name) {
+            var names = {
+                "隐士小屋": "Hermit's Cabin",
+                "冥界之门": "Underworld Gate",
+                "教堂": "Church",
+                "墓地": "Cemetery",
+                "怪异森林": "Weird Woods",
+                "古老祭坛": "Erstwhile Altar"
+            };
+            return names[name] || name;
+        };
+
+        this.cardImageKey = function(name) {
+            var names = {
+                "神秘罗盘": "Mystic Compass",
+                "护身符": "Talisman",
+                "幸运胸针": "Fortune Brooch",
+                "银色念珠": "Silver Rosary",
+                "朗基努斯之枪": "Spear of Longinus",
+                "降临": "Advent",
+                "破魔镜": "Disenchant Mirror",
+                "祝福": "Blessing",
+                "巧克力": "Chocolate",
+                "隐藏知识": "Concealed Knowledge",
+                "守护天使": "Guardian Angel",
+                "圣袍": "Holy Robe",
+                "审判之火": "Flare of Judgement",
+                "急救": "First Aid",
+                "治疗圣水": "Holy Water of Healing",
+                "诅咒之剑·正宗": "Cursed Sword Masamune",
+                "机枪": "Machine Gun",
+                "手枪": "Handgun",
+                "屠夫刀": "Butcher Knife",
+                "电锯": "Chainsaw",
+                "生锈的宽刃斧": "Rusted Broad Axe",
+                "喜怒无常的哥布林": "Moody Goblin",
+                "嗜血蜘蛛": "Bloodthirsty Spider",
+                "吸血蝙蝠": "Vampire Bat",
+                "恶魔仪式": "Diabolic Ritual",
+                "香蕉皮": "Banana Peel",
+                "炸药": "Dynamite",
+                "灵魂人偶": "Spiritual Doll"
+            };
+            return names[name] || name;
+        };
+
+        this.characterImageKey = function(name) {
+            var names = {
+                "艾莉": "Allie",
+                "乔治": "George",
+                "风香": "Fu-ka",
+                "女武神": "Valkyrie",
+                "吸血鬼": "Vampire",
+                "鲍勃": "Bob",
+                "凯瑟琳": "Catherine",
+                "富兰克林": "Franklin",
+                "艾伦": "Ellen",
+                "超灵魂": "Ultra Soul",
+                "狼人": "Werewolf",
+                "匿名": "Anon"
+            };
+            return names[name] || name;
+        };
+
         // this names the scene we are in
         Phaser.Scene.call(this, { key: 'board' });
 
@@ -105,7 +176,7 @@ var GameBoard = new Phaser.Class ({
         });
 
         this.load.on('fileprogress', function (file) {
-            assetText.setText('Loading visual elements...');
+            assetText.setText('正在加载游戏画面……');
         });
 
         this.load.on('complete', function () {
@@ -262,7 +333,7 @@ var GameBoard = new Phaser.Class ({
         this.popupInfo.infoBox.depth = 30;
         this.popupInfo.displayInfo = this.add.text(this.popupInfo.infoBox.x - 80,
           this.popupInfo.infoBox.y - 40,
-          "Click on things to see more information! Click on the i button to close this popup.",
+          "点击游戏中的元素查看详细信息！点击 i 按钮关闭此提示。",
           { font: '12px Palatino', fill: '#FFFFFF',
           wordWrap: { width: 130, useAdvancedWrap: true }});
         this.popupInfo.displayInfo.depth = 30;
@@ -337,14 +408,14 @@ var GameBoard = new Phaser.Class ({
 
             //set the text for inside of the box
             text.setText([
-                'Team: ' + this.charInfo.alleg,
-                'Win Condition: ' + this.charInfo.win_cond_desc,
-                'Special Ability: ' + this.charInfo.special_desc
+                '阵营：' + this.allegName(this.charInfo.alleg),
+                '胜利条件：' + this.charInfo.win_cond_desc,
+                '特殊能力：' + this.charInfo.special_desc
                 ]);
 
             this.add.image(100, 366.975, "circle" + String(this.player.number)).setScale(1.025);
-            this.add.image(100, 366.975, this.charInfo.name);
-            this.add.image(60.442, 322.289, this.charInfo.name[0]);
+            this.add.image(100, 366.975, this.characterImageKey(this.charInfo.name));
+            this.add.image(60.442, 322.289, this.characterImageKey(this.charInfo.name)[0]);
             this.add.image(137.489, 412.722, String(this.charInfo.max_damage) + "hp");
 
             //align the text inside of our information box
@@ -394,7 +465,7 @@ var GameBoard = new Phaser.Class ({
             // Add equipment card image
             var equip_x = 265+i*107.450;
             var equip_y = 550;
-            var equip = this.add.image(equip_x, equip_y, card.title);
+            var equip = this.add.image(equip_x, equip_y, this.cardImageKey(card.title));
 
 
             // Add popup box
@@ -405,8 +476,8 @@ var GameBoard = new Phaser.Class ({
             // Add display text
             equip.displayInfo = this.add.text(equip.infoBox.x - 120, equip.infoBox.y - 40, " ", { font: '12px Palatino', fill: '#FFFFFF', wordWrap: { width: 250, useAdvancedWrap: true }});
             equip.displayInfo.setText([
-                "Equipment: " + card.title,
-                "Effect: " + card.desc
+                "装备：" + card.title,
+                "效果：" + card.desc
                 ]);
             equip.displayInfo.setVisible(false);
             equip.displayInfo.depth = 30;
@@ -429,7 +500,7 @@ var GameBoard = new Phaser.Class ({
 
             var display_text = []
             for (var i = 0; i < this.gameData.public.characters.length; i++) {
-              display_text.push("Player: " + this.gameData.public.characters[i].name, "Dies At HP: " + this.gameData.public.characters[i].max_damage + "\n");
+              display_text.push("玩家：" + this.gameData.public.characters[i].name, "死亡生命值：" + this.gameData.public.characters[i].max_damage + "\n");
           }
           sprite.displayInfo.setText(display_text);
           sprite.displayInfo.setVisible(false);
@@ -440,7 +511,7 @@ var GameBoard = new Phaser.Class ({
 
     // this adds the zones to the board and makes them interactive on click
     makeZones: function(zone_num, card_num) {
-        var zone = this.add.image(this.zoneSpots[zone_num][card_num*2],this.zoneSpots[zone_num][card_num*2 + 1], this.gameData.public.zones[zone_num][card_num].name);
+        var zone = this.add.image(this.zoneSpots[zone_num][card_num*2],this.zoneSpots[zone_num][card_num*2 + 1], this.areaImageKey(this.gameData.public.zones[zone_num][card_num].name));
         if (zone_num == 0) {
             zone.setScale(1).angle = -60;
             zone.infoBox = this.add.image(zone.x-90, zone.y, "popup_left");
@@ -463,7 +534,7 @@ var GameBoard = new Phaser.Class ({
         }
 
         zone.displayInfo.setText([
-            "Area: " + this.gameData.public.zones[zone_num][card_num].name,
+            "区域：" + this.gameData.public.zones[zone_num][card_num].name,
             this.gameData.public.zones[zone_num][card_num].desc
             ]);
 
@@ -506,7 +577,7 @@ var GameBoard = new Phaser.Class ({
 
         summaryIcon.names[i] = this.gameData.public.players[i].user_id;
         summaryIcon.damage[i] = this.gameData.public.players[i].damage;
-        summaryIcon.equipment[i] = "None";
+        summaryIcon.equipment[i] = "无";
         if(this.player && (this.gameData.public.players[i].user_id === this.player.name)) {
 
           summaryIcon.characters[i] = this.charInfo.name;
@@ -515,7 +586,7 @@ var GameBoard = new Phaser.Class ({
           var img_x = summaryIcon.displayCharacter[i].charImage.x;
           var img_y = summaryIcon.displayCharacter[i].charImage.y;
           summaryIcon.displayCharacter[i].charImage.destroy();
-          summaryIcon.displayCharacter[i].charImage = this.add.image(img_x, img_y, this.charInfo.name);
+          summaryIcon.displayCharacter[i].charImage = this.add.image(img_x, img_y, this.characterImageKey(this.charInfo.name));
       }
       else {
           summaryIcon.characters[i] = "?";
@@ -524,11 +595,11 @@ var GameBoard = new Phaser.Class ({
       }
 
       summaryIcon.displayInfo[i].setText([
-          "Player Name: " + summaryIcon.names[i],
-          "Character: " + summaryIcon.characters[i],
-          "Damage: " + summaryIcon.damage[i] + ", Team: " + summaryIcon.team[i],
-          "Win Condition: " + summaryIcon.win[i],
-          "Equipment: " + summaryIcon.equipment[i]
+          "玩家名称：" + summaryIcon.names[i],
+          "角色：" + summaryIcon.characters[i],
+          "伤害：" + summaryIcon.damage[i] + ", 阵营：" + summaryIcon.team[i],
+          "胜利条件：" + summaryIcon.win[i],
+          "装备：" + summaryIcon.equipment[i]
           ]);
 
       summaryIcon.displayInfo[i].depth = 40;
@@ -570,8 +641,8 @@ var GameBoard = new Phaser.Class ({
         sprite.infoBox.setVisible(false);
         sprite.displayInfo = this.add.text(sprite.infoBox.x - 120, sprite.infoBox.y - 40, " ", { font: '12px Palatino', fill: '#FFFFFF', wordWrap: { width: 250, useAdvancedWrap: true }});
         sprite.displayInfo.setText([
-            "Player: " + sprite.name,
-            "Equipment: None"
+            "玩家：" + sprite.name,
+            "装备：无"
             ]);
         sprite.displayInfo.setVisible(false);
 
@@ -708,7 +779,7 @@ var GameBoard = new Phaser.Class ({
   }
 
   if(data.state == 0 && player.info.state != 0) {
-      this.gameSummary.characters[player.number - 1] = data.character.name+ " (Dead)";
+      this.gameSummary.characters[player.number - 1] = data.character.name+ " （死亡）";
   }
 
         // Update player info to contain new data
@@ -716,13 +787,13 @@ var GameBoard = new Phaser.Class ({
 
         // Update infobox
         if(Object.keys(player.info.location).length == 0) {
-            player.info.location.name = "None";
+            player.info.location.name = "无";
         }
 
         var nEquip = player.info.equipment.length;
         if(nEquip == 0) {
-            player.info.equipment.list = "None";
-            this.gameSummary.equipment[player.number - 1] = "None";
+            player.info.equipment.list = "无";
+            this.gameSummary.equipment[player.number - 1] = "无";
         }
         else {
             player.info.equipment.list = "";
@@ -743,16 +814,16 @@ var GameBoard = new Phaser.Class ({
       }
 
       player.displayInfo.setText([
-        "Player: " + displayName,
-        "Equipment: " + player.info.equipment.list
+        "玩家：" + displayName,
+        "装备：" + player.info.equipment.list
         ]);
 
       this.gameSummary.displayInfo[player.number - 1].setText([
-          "Player Name: " + this.gameSummary.names[player.number - 1],
-          "Character: " + this.gameSummary.characters[player.number - 1],
-          "Damage: " + this.gameSummary.damage[player.number - 1] + ", Team: " + this.gameSummary.team[player.number - 1],
-          "Win Condition: " + this.gameSummary.win[player.number - 1],
-          "Equipment: " + this.gameSummary.equipment[player.number - 1]
+          "玩家名称：" + this.gameSummary.names[player.number - 1],
+          "角色：" + this.gameSummary.characters[player.number - 1],
+          "伤害：" + this.gameSummary.damage[player.number - 1] + ", 阵营：" + this.gameSummary.team[player.number - 1],
+          "胜利条件：" + this.gameSummary.win[player.number - 1],
+          "装备：" + this.gameSummary.equipment[player.number - 1]
           ]);
   },
 
@@ -848,10 +919,10 @@ var GameBoard = new Phaser.Class ({
             this.gameEnd.winners[i].depth = 40;
             this.gameEnd.players_info[i].depth = 40;
             this.gameEnd.players_info[i].setText([
-                'Player: ' + winners[i].user_id,
-                'Character: ' + winners[i].character.name,
-                'Team: ' + winners[i].character.alleg,
-                'Win Condition: ' + winners[i].character.win_cond_desc
+                '玩家：' + winners[i].user_id,
+                '角色：' + winners[i].character.name,
+                '阵营：' + this.allegName(winners[i].character.alleg),
+                '胜利条件：' + winners[i].character.win_cond_desc
                 ]);
         }
 
@@ -871,13 +942,13 @@ var GameBoard = new Phaser.Class ({
         if(cardInfo.color == "White") {
             this.cards.cardsDrawn[cardsOut] = this.add.image(300, 375, "whitecard");
             this.cards.cardsDrawn[cardsOut].cardText = this.add.text(235, 375, " ", { font: '10px Palatino', fill: '#000000', wordWrap: { width: 139, useAdvancedWrap: true }});
-            this.cards.cardsDrawn[cardsOut].charImage = this.add.image(300, 325, cardInfo.title);
+            this.cards.cardsDrawn[cardsOut].charImage = this.add.image(300, 325, this.cardImageKey(cardInfo.title));
         }
 
         else if (cardInfo.color == "Black") {
             this.cards.cardsDrawn[cardsOut] = this.add.image(300, 375, "blackcard");
             this.cards.cardsDrawn[cardsOut].cardText = this.add.text(235, 375, " ", { font: '10px Palatino', fill: '#FFFFFF', wordWrap: { width: 139, useAdvancedWrap: true }});
-            this.cards.cardsDrawn[cardsOut].charImage = this.add.image(300, 325, cardInfo.title);
+            this.cards.cardsDrawn[cardsOut].charImage = this.add.image(300, 325, this.cardImageKey(cardInfo.title));
         }
         else {
             this.cards.cardsDrawn[cardsOut] = this.add.image(300, 375, "greencard");
@@ -911,14 +982,14 @@ var GameBoard = new Phaser.Class ({
 
         this.cards.cardsDrawn[cardsOut] = this.add.image(300, 375, "redcard");
         this.cards.cardsDrawn[cardsOut].char = true;
-        this.cards.cardsDrawn[cardsOut].charImage = this.add.image(300, 285, charInfo.player.character.name).setScale(.75);
+        this.cards.cardsDrawn[cardsOut].charImage = this.add.image(300, 285, this.characterImageKey(charInfo.player.character.name)).setScale(.75);
         this.cards.cardsDrawn[cardsOut].cardText = this.add.text(235, 345, " ", { font: '10px Palatino', fill: '#FFFFFF', wordWrap: { width: 139, useAdvancedWrap: true }});
 
         this.cards.cardsDrawn[cardsOut].cardText.setText([
             charInfo.player.character.name,
-            "Team: " + charInfo.player.character.alleg,
-            "Win Condition: " + charInfo.player.character.win_cond_desc,
-            "Special Ability: " + charInfo.player.character.special_desc
+            "阵营：" + this.allegName(charInfo.player.character.alleg),
+            "胜利条件：" + charInfo.player.character.win_cond_desc,
+            "特殊能力：" + charInfo.player.character.special_desc
             ]);
 
         this.cards.cardsDrawn[cardsOut].setInteractive();
@@ -933,11 +1004,11 @@ var GameBoard = new Phaser.Class ({
               this.gameSummary.win[i] = charInfo.player.character.win_cond_desc;
 
               this.gameSummary.displayInfo[i].setText([
-                "Player Name: " + this.gameSummary.names[i],
-                "Character: " + this.gameSummary.characters[i],
-                "Damage: " + this.gameSummary.damage[i] + ", Team: " + this.gameSummary.team[i],
-                "Win Condition: " + this.gameSummary.win[i],
-                "Equipment: " + this.gameSummary.equipment[i]
+                "玩家名称：" + this.gameSummary.names[i],
+                "角色：" + this.gameSummary.characters[i],
+                "伤害：" + this.gameSummary.damage[i] + ", 阵营：" + this.gameSummary.team[i],
+                "胜利条件：" + this.gameSummary.win[i],
+                "装备：" + this.gameSummary.equipment[i]
                 ]);
 
               this.gameSummary.displayCharacter[i].charImage.destroy();
@@ -967,10 +1038,10 @@ var GameBoard = new Phaser.Class ({
         });
 
         if(charInfo.type === "die") {
-          this.cards.cardsDrawn[cardsOut].cardText.setText([charInfo.player.user_id, "died!"]);
+          this.cards.cardsDrawn[cardsOut].cardText.setText([charInfo.player.user_id, "死亡！"]);
       }
       else {
-          this.cards.cardsDrawn[cardsOut].cardText.setText([ charInfo.player.user_id, "revealed!"]);
+          this.cards.cardsDrawn[cardsOut].cardText.setText([ charInfo.player.user_id, "已揭示！"]);
       }
       this.cards.cardsDrawn[cardsOut].depth = 40;
       this.cards.cardsDrawn[cardsOut].cardText.depth = 40;

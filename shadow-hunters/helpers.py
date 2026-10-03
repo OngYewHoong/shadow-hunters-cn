@@ -39,7 +39,15 @@ def color_format(str, args, gc):
         elif n in neutrals or n == 'Neutral':
             colors.append(C.TEXT_COLORS['neutral'])
         elif n in areas:
-            colors.append(C.TEXT_COLORS[n])
+            area_color_names = {
+                '怪异森林': 'Weird Woods',
+                '教堂': 'Church',
+                '墓地': 'Cemetery',
+                '古老祭坛': 'Erstwhile Altar',
+                '隐士小屋': "Hermit's Cabin",
+                '冥界之门': 'Underworld Gate'
+            }
+            colors.append(C.TEXT_COLORS[area_color_names.get(n, n)])
         elif gc and p:
             colors.append(p[0].color)
         else:
