@@ -144,14 +144,13 @@ $('document').ready(function() {
 
         // False start handler
         socket.on('false_start', function(data) {
-            alert("You cannot start a "+data.field+"-player game when there are "+data.actual+" people in the room.");
+            alert("当前房间有 "+data.actual+" 人，无法开始 "+data.field+" 人游戏。");
         });
 
         // Disconnect handler
         socket.on('disconnect', function(reason) {
             window.onbeforeunload = function() {};
-            alert("You have lost connection to the server – click 'Ok' to return to the home page, " +
-                  "where you may reconnect if you were in a game.");
+            alert("与服务器的连接已断开。点击“确定”返回首页，如果之前正在游戏中，可以重新加入房间。");
             window.location = "/";
         });
 
